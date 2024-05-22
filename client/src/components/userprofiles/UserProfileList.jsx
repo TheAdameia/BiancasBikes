@@ -11,12 +11,16 @@ export default function UserProfileList({ loggedInUser }) {
   }, []);
 
   const promote = (id) => {
-    console.log(`${id} promoted!`);
+    promoteUser(id).then(() => {
+      getUserProfilesWithRoles().then(setUserProfiles);
+    });
   };
   const demote = (id) => {
-    console.log(`${id} demoted!`);
+    demoteUser(id).then(() => {
+      getUserProfilesWithRoles().then(setUserProfiles);
+    });
   };
-
+  
   return (
     <>
       <h2>User Profiles</h2>

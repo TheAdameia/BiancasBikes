@@ -58,4 +58,36 @@ public class UserProfileController : ControllerBase
             .ToList()
         }));
     }
+
+    [HttpPost("promote/{id}")]
+[Authorize(Roles = "Admin")]
+public IActionResult Promote(string id)
+{
+    IdentityRole role = _dbContext.Roles.SingleOrDefault(r => r.Name == "Admin");
+    // This will create a new row in the many-to-many UserRoles table.
+    _dbContext.UserRoles.Add(new IdentityUserRole<string>
+    {
+        RoleId = role.Id,
+        UserId = id
+    });
+    _dbContext.SaveChanges();
+    return NoContent();
+}
+
+[HttpPost("demote/{id}")]
+[Authorize(Roles = "Admin")]
+public IActionResult Demote(string id)
+{
+    IdentityRole role = _dbContext.Roles
+        .SingleOrDefault(r => r.Name == "Admin"); 
+    IdentityUserRole<string> userRole = _dbContext
+        .UserRoles
+        .SingleOrDefault(ur =>
+            ur.RoleId == role.Id &&
+            ur.UserId == id);
+
+    _dbContext.UserRoles.Remove(userRole);
+    _dbContext.SaveChanges();
+    return NoContent();
+}
 }
